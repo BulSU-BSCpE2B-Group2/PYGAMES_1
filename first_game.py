@@ -3,6 +3,7 @@ import pygame
 # initialize the game engine
 pygame.init()
 
+#set window size
 screenWidth = 1259
 screenHeight = 651
 
