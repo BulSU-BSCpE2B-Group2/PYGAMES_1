@@ -73,7 +73,7 @@ class Projectile(object):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
 
-def redrawGameWindow():
+def redrawgamewindow():
     win.blit(bg, (0, 0))
     man.draw(win)
     pygame.display.update()
@@ -123,6 +123,6 @@ while run:
             man.isJump = False
             man.jumpCount = 10
 
-    redrawGameWindow()
+    redrawgamewindow()
 
 pygame.quit()
