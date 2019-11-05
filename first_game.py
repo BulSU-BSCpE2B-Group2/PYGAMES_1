@@ -12,6 +12,7 @@ win = pygame.display.set_mode((screenWidth, screenHeight))
 # window title / caption
 pygame.display.set_caption("First Game Test")
 
+# load the assets for the game. Excluding music.
 walkRight = [pygame.image.load('assets/R1.png'), pygame.image.load('assets/R2.png'), pygame.image.load('assets/R3.png'),
              pygame.image.load('assets/R4.png'), pygame.image.load('assets/R5.png'), pygame.image.load('assets/R6.png'),
              pygame.image.load('assets/R7.png'), pygame.image.load('assets/R8.png'), pygame.image.load('assets/R9.png')]
