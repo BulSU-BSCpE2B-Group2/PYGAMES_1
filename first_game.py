@@ -73,6 +73,7 @@ class Projectile(object):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
 
+# Refreshing the window every clock.tick
 def redrawgamewindow():
     win.blit(bg, (0, 0))
     man.draw(win)
