@@ -22,28 +22,28 @@ char = pygame.image.load('assets/standing.png')
 
 clock = pygame.time.Clock()
 
-class player(object):
+
+class Player(object):
     def __init__(self, x, y, width, height):
-        #position of object
+        # position of object
         self.x = x
         self.y = y
-        #hitbox of object
+        # hitbox of object
         self.width = width
         self.height = height
-        #constant velocity of object
+        # constant velocity of object
         self.vel = 5
-        #state of the object
+        # state of the object
         self.isJump = False
         self.jumpCount = 10
-        #orientation of objects
+        # orientation of objects
         self.left = False
         self.right = False
         self.walkCount = 0
         self.standing = True
 
     def draw(self, win):
-
-
+        # since you want each image to stay for 3 frames: (3 * 9 = 27) There are 9 images.
         if self.walkCount + 1 >= 27:
             self.walkCount = 0
         if not self.standing:
@@ -57,9 +57,10 @@ class player(object):
             if self.right:
                 win.blit(walkRight[0], (self.x, self.y))
             else:
-                win.blit(walkLeft[0],(self.x, self.y))
+                win.blit(walkLeft[0], (self.x, self.y))
 
-class projectile(object):
+
+class Projectile(object):
     def __init__(self, x, y, color, facing):
         self.x = x
         self.y = y
@@ -73,12 +74,13 @@ class projectile(object):
 
 
 def redrawGameWindow():
-    win.blit(bg, (0,0))
+    win.blit(bg, (0, 0))
     man.draw(win)
     pygame.display.update()
 
-#create an instance of man
-man = player(250, 569, 64, 64)
+
+# create an instance of man
+man = Player(250, 569, 64, 64)
 
 # mainLoop that runs as long as program is running
 run = True
@@ -120,7 +122,6 @@ while run:
         else:
             man.isJump = False
             man.jumpCount = 10
-
 
     redrawGameWindow()
 
