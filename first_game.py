@@ -118,6 +118,7 @@ while run:
             neg = 1
             if man.jumpCount < 0:
                 neg = -1
+            # Quadratic equation of jumping
             man.y -= (man.jumpCount ** 2) * 0.5 * neg
             man.jumpCount -= 1
         else:
