@@ -3,7 +3,7 @@ import pygame
 # initialize the game engine
 pygame.init()
 
-#set window size
+# set window size
 screenWidth = 1259
 screenHeight = 651
 
@@ -65,7 +65,7 @@ class Projectile(object):
     def __init__(self, x, y, color, facing):
         self.x = x
         self.y = y
-        'self.radius = radius'
+        self.radius = 2
         self.color = color
         self.facing = facing
         self.vel = 8 * facing
