@@ -104,6 +104,8 @@ while run:
         man.right = True
         man.left = False
         man.standing = False
+    elif keys[pygame.K_ESCAPE]:
+        run = False
     else:
         man.standing = True
         man.walkCount = 0
