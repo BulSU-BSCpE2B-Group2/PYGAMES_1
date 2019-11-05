@@ -64,7 +64,7 @@ class Projectile(object):
     def __init__(self, x, y, color, facing):
         self.x = x
         self.y = y
-        self.radius = radius
+        'self.radius = radius'
         self.color = color
         self.facing = facing
         self.vel = 8 * facing
@@ -120,6 +120,7 @@ while run:
             neg = 1
             if man.jumpCount < 0:
                 neg = -1
+            # Quadratic equation of jumping
             man.y -= (man.jumpCount ** 2) * 0.5 * neg
             man.jumpCount -= 1
         else:
