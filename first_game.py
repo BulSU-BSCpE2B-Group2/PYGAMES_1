@@ -65,7 +65,7 @@ class Projectile(object):
     def __init__(self, x, y, color, facing):
         self.x = x
         self.y = y
-        self.radius = radius
+        'self.radius = radius'
         self.color = color
         self.facing = facing
         self.vel = 8 * facing
@@ -105,6 +105,8 @@ while run:
         man.right = True
         man.left = False
         man.standing = False
+    elif keys[pygame.K_ESCAPE]:
+        run = False
     else:
         man.standing = True
         man.walkCount = 0
