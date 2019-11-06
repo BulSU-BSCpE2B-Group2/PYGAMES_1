@@ -78,7 +78,7 @@ class Projectile(object):
         self.vel = 8 * facing
 
     def draw(self, win):
-        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
+        pygame.draw.circle(win, self.color, (self.x, self.y), 5 )
 
 
 class Enemy(object):
@@ -134,35 +134,42 @@ class Enemy(object):
                 self.vel = self.vel * -1
                 self.walkCount = 0
 
-    def hit(self):
+    def hit(self, points):
         if self.health > 0:
             self.health -= 1
+            points += 0
+            return points
+
         if self.health == 0:
             self.visible = False
+            points += 1
+            return int(points)
 
 # This is where the display happens. Everything you put here is displayed
-def redrawgamewindow():
+def redrawgamewindow(points):
     win.blit(bg, (0, 0))
-    text = font.render("Score: %d" %(score), 1, (255, 0, 0))
+    text = font.render("Score: %d" %points, 1, (255, 0, 0))
     win.blit(text, (1000, 50))
     man.draw(win)
-    goblin.draw(win)
+    for i in goblin:
+        i.draw(win)
     for bullet in bullets:
         bullet.draw(win)
 
     pygame.display.update()
 
 
-font = pygame.font.SysFont('consolas', 30, True)
+font = pygame.font.SysFont('lato', 30, True)
 # create an instance of man
 man = Player(250, 569, 64, 64)
 
 # create bullets
 bullets = []
 
-goblin = Enemy(100, 569, 64, 64, 1200)
+goblin = []
 
 gunCooldown = 0
+goblinSpawnCooldown = 0
 
 # mainLoop that runs as long as program is running
 run = True
@@ -170,33 +177,44 @@ while run:
     clock.tick(27)
 
     gunCooldown += 1
+    goblinSpawnCooldown += 1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
             
     for bullet in bullets:
-        if bullet.y - bullet.radius < goblin.hitbox[1] + goblin.hitbox[3] and bullet.y + bullet.radius > goblin.hitbox[1]:
-            if bullet.x - bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]:
-                if goblin.visible:
-                    goblin.hit()
-                    score += 1
-                    bullets.pop(bullets.index(bullet))
+        for i in goblin:
+            if bullet.y - bullet.radius < i.hitbox[1] + i.hitbox[3] and bullet.y + bullet.radius > i.hitbox[1]:
+                if bullet.x - bullet.radius > i.hitbox[0] and bullet.x - bullet.radius < i.hitbox[0] + i.hitbox[2]:
+                    if i.visible:
+                        score = i.hit(score)
+                        try:
+                            bullets.pop(bullets.index(bullet))
+                        except ValueError:
+                            print("Bullet is nullified, if enemies are in state of collision the damage becomes split "
+                                  "which nullifies bullet")
 
-        if 1200 > bullet.x > 0:
+        if 1256 > bullet.x > 0:
             bullet.x += bullet.vel
         else:
-            bullets.pop(bullets.index(bullet))
+            try:
+                bullets.pop(bullets.index(bullet))
+            except ValueError:
+                print("Woops. Looks like collision between the enemy, bullet and the map border has matched.")
 
     keys = pygame.key.get_pressed()
+    if len(goblin) < 3 and goblinSpawnCooldown >= 15:
+        goblin.append(Enemy(100, 569, 64, 64, 1200))
+        goblinSpawnCooldown = 0
 
-    if keys[pygame.K_SPACE] and gunCooldown >= 15:
+    if keys[pygame.K_SPACE] and gunCooldown >= 12:
         if man.left:
             facing = -1
         else:
             facing = 1
         if len(bullets) <= 5:
-            bullets.append(Projectile(round(man.x + man.width // 2), round(man.y + man.height // 2), 6, (255, 255, 255),
+            bullets.append(Projectile(round(man.x + man.width // 2), round(man.y + man.height // 2), 1, (255, 255, 255),
                                       facing))
         gunCooldown = 0
 
@@ -233,7 +251,7 @@ while run:
             man.isJump = False
             man.jumpCount = 10
 
-    redrawgamewindow()
+    redrawgamewindow(score)
 
 pygame.quit()
 
