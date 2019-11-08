@@ -1,7 +1,6 @@
 import pygame
 import random
 
-
 # initialize the game engine
 pygame.init()
 
@@ -24,9 +23,16 @@ walkLeft = [pygame.image.load('assets/L1.png'), pygame.image.load('assets/L2.png
 bg = pygame.image.load('assets/bg.jpg')
 char = pygame.image.load('assets/standing.png')
 
+hitSound = pygame.mixer.Sound('assets/hit.wav')
+bulletSound = pygame.mixer.Sound('assets/bullet.wav')
+
+music = pygame.mixer.music.load('assets/music.mp3')
+pygame.mixer.music.play(-1)
+
 clock = pygame.time.Clock()
 
 score = 0
+
 
 class Player(object):
     def __init__(self, x, y, width, height):
@@ -67,6 +73,23 @@ class Player(object):
         self.hitbox = (self.x + 18, self.y + 12, self.width - (18 * 2), self.height - (5 * 2))
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
+    def hit(self):
+        self.isJump = False
+        self.jumpCount = 10
+        self.walkCount = 0
+        self.y = 569
+        font1 = pygame.font.SysFont('lato', 100)
+        text = font1.render('-5', 5, (255, 0, 0))
+        win.blit(text, (screenWidth / 2 - (text.get_width()/2), screenHeight / 2 - (text.get_height()/2)))
+        pygame.display.update()
+        """delay = 0
+        while delay < 300:
+            pygame.time.delay(1)
+            delay += 1
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    delay = 301
+                    pygame.quit()"""
 
 class Projectile(object):
     def __init__(self, x, y, radius, color, facing):
@@ -78,17 +101,23 @@ class Projectile(object):
         self.vel = 8 * facing
 
     def draw(self, win):
-        pygame.draw.circle(win, self.color, (self.x, self.y), 5 )
+        pygame.draw.circle(win, self.color, (self.x, self.y), 5)
 
 
 class Enemy(object):
-    walkRight = [pygame.image.load('assets/R1E.png'), pygame.image.load('assets/R2E.png'), pygame.image.load('assets/R3E.png'),
-                 pygame.image.load('assets/R4E.png'), pygame.image.load('assets/R5E.png'), pygame.image.load('assets/R6E.png'),
-                 pygame.image.load('assets/R7E.png'), pygame.image.load('assets/R8E.png'), pygame.image.load('assets/R9E.png'),
+    walkRight = [pygame.image.load('assets/R1E.png'), pygame.image.load('assets/R2E.png'),
+                 pygame.image.load('assets/R3E.png'),
+                 pygame.image.load('assets/R4E.png'), pygame.image.load('assets/R5E.png'),
+                 pygame.image.load('assets/R6E.png'),
+                 pygame.image.load('assets/R7E.png'), pygame.image.load('assets/R8E.png'),
+                 pygame.image.load('assets/R9E.png'),
                  pygame.image.load('assets/R10E.png'), pygame.image.load('assets/R11E.png')]
-    walkLeft = [pygame.image.load('assets/L1E.png'), pygame.image.load('assets/L2E.png'), pygame.image.load('assets/L3E.png'),
-                pygame.image.load('assets/L4E.png'), pygame.image.load('assets/L5E.png'), pygame.image.load('assets/L6E.png'),
-                pygame.image.load('assets/L7E.png'), pygame.image.load('assets/L8E.png'), pygame.image.load('assets/L9E.png'),
+    walkLeft = [pygame.image.load('assets/L1E.png'), pygame.image.load('assets/L2E.png'),
+                pygame.image.load('assets/L3E.png'),
+                pygame.image.load('assets/L4E.png'), pygame.image.load('assets/L5E.png'),
+                pygame.image.load('assets/L6E.png'),
+                pygame.image.load('assets/L7E.png'), pygame.image.load('assets/L8E.png'),
+                pygame.image.load('assets/L9E.png'),
                 pygame.image.load('assets/L10E.png'), pygame.image.load('assets/L11E.png')]
 
     def __init__(self, x, y, width, height, end):
@@ -137,6 +166,7 @@ class Enemy(object):
     def hit(self, points):
         if self.health > 0:
             self.health -= 1
+            hitSound.play()
             points += 0
             return points
 
@@ -145,10 +175,11 @@ class Enemy(object):
             points += 1
             return int(points)
 
+
 # This is where the display happens. Everything you put here is displayed
 def redrawgamewindow(points):
     win.blit(bg, (0, 0))
-    text = font.render("Score: %d" %points, 1, (255, 0, 0))
+    text = font.render("Score: %d" % points, 1, (255, 0, 0))
     win.blit(text, (1000, 50))
     man.draw(win)
     for i in goblin:
@@ -175,6 +206,17 @@ goblinSpawnCooldown = 0
 run = True
 while run:
     clock.tick(27)
+    for i in goblin:
+        if man.hitbox[1] < i.hitbox[1] + i.hitbox[3] and man.hitbox[1] + man.hitbox[3] > i.hitbox[1]:
+            if man.hitbox[0] + man.hitbox[2] > i.hitbox[0] and man.hitbox[0] < i.hitbox[0] + i.hitbox[2]:
+                if i.visible:
+                    if man.left:
+                        man.x += 10
+                        man.hit()
+                    if man.right:
+                        man.x -= 10
+                        man.hit()
+                    hitSound.play()
 
     gunCooldown += 1
     goblinSpawnCooldown += 1
@@ -182,11 +224,11 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-            
+
     for bullet in bullets:
         for i in goblin:
             if bullet.y - bullet.radius < i.hitbox[1] + i.hitbox[3] and bullet.y + bullet.radius > i.hitbox[1]:
-                if bullet.x - bullet.radius > i.hitbox[0] and bullet.x - bullet.radius < i.hitbox[0] + i.hitbox[2]:
+                if bullet.x + bullet.radius > i.hitbox[0] and bullet.x - bullet.radius < i.hitbox[0] + i.hitbox[2]:
                     if i.visible:
                         score = i.hit(score)
                         try:
@@ -214,6 +256,7 @@ while run:
         else:
             facing = 1
         if len(bullets) <= 5:
+            bulletSound.play()
             bullets.append(Projectile(round(man.x + man.width // 2), round(man.y + man.height // 2), 1, (255, 255, 255),
                                       facing))
         gunCooldown = 0
